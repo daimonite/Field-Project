@@ -21,6 +21,18 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
+Download required packages
+```
+pip install --upgrade pip
+
+pip install fastapi uvicorn python-multipart ollama pandas openpyxl
+```
+
+Start the server
+```
+uvicorn main:app --reload
+```
+
 ## How each page is protected
 
 - `user.html` and `admin.html` both call `Store.requireAuth()` (via `nav.js` / their own script) on load — if nobody is signed in, they redirect to `login.html`.
