@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign in — AI Office Node</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="js/tailwind-config.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Hanken+Grotesk:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body class="bg-slate-900 h-screen w-screen flex items-center justify-center relative overflow-hidden">
+  <div class="absolute inset-0 opacity-[0.04]" style="background-image: linear-gradient(#f7be1d 1px, transparent 1px), linear-gradient(90deg, #f7be1d 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+  <div class="relative w-full max-w-sm mx-4">
+    <div class="flex items-center gap-3 justify-center mb-8">
+      <div class="w-11 h-11 rounded bg-primary-fixed-dim flex items-center justify-center">
+        <span class="material-symbols-outlined text-slate-900">hub</span>
+      </div>
+      <div>
+        <h1 class="font-headline-md text-headline-md text-primary-fixed-dim leading-none">AI Office Node</h1>
+        <p class="font-mono-sm text-mono-sm text-slate-400 mt-1">TRA · Local Network Hub</p>
+      </div>
+    </div>
+
+    <div class="bg-white border border-outline-variant rounded-xl p-7 shadow-sm">
+      <h2 class="font-headline-md text-headline-md text-slate-900 mb-1">Sign in</h2>
+      <p class="font-body-sm text-body-sm text-secondary mb-6">Use your office credentials to access the node.</p>
+
+      <div id="login-error" hidden class="mb-4 bg-error-container border border-error/30 text-on-error-container font-body-sm text-body-sm rounded px-3 py-2 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">error</span>
+        <span id="login-error-text">Invalid username or password.</span>
+      </div>
+
+      <form id="login-form" class="flex flex-col gap-4">
+        <div>
+          <label class="font-label-md text-label-md text-on-surface-variant block mb-1.5">USERNAME</label>
+          <input id="login-username" type="text" required autocomplete="username"
+            class="w-full border border-outline rounded px-3 py-2.5 font-body-md text-body-md focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-colors" placeholder="e.g. j.mushi"/>
+        </div>
+        <div>
+          <label class="font-label-md text-label-md text-on-surface-variant block mb-1.5">PASSWORD</label>
+          <input id="login-password" type="password" required autocomplete="current-password"
+            class="w-full border border-outline rounded px-3 py-2.5 font-body-md text-body-md focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-colors" placeholder="••••••••"/>
+        </div>
+        <button type="submit" class="w-full bg-primary-fixed-dim text-slate-900 font-label-md text-label-md py-3 rounded hover:bg-primary-container transition-colors mt-2">
+          SIGN IN
+        </button>
+      </form>
+
+      <div class="mt-5 pt-5 border-t border-outline-variant/60 text-center">
+        <span class="font-body-sm text-body-sm text-secondary">No account yet? </span>
+        <a href="register.html" class="font-body-sm text-body-sm text-primary font-semibold hover:underline">Request access</a>
+      </div>
+    </div>
+
+    <p class="text-center font-mono-sm text-mono-sm text-slate-400 mt-6">Demo logins — admin: <span class="text-slate-300">admin / admin123</span> · staff: <span class="text-slate-300">demo / demo123</span></p>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

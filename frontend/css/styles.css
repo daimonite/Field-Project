@@ -1,0 +1,9 @@
+/* Shared styles across all pages */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-symbols-outlined[data-weight="fill"] {
+  font-variation-settings: 'FILL' 1;
+}
+[hidden] { display: none !important; }
+body { font-family: 'Inter', sans-serif; }
