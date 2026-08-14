@@ -13,6 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
   showTab(currentTabFromHash());
   window.addEventListener("hashchange", () => showTab(currentTabFromHash()));
 
+  fetch("/model")
+    .then((res) => res.json())
+    .then((data) => {
+      const el = document.getElementById("node-model");
+      if (el) el.textContent = data.model;
+    })
+    .catch(() => {});
+
   document.getElementById("chat-input")?.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -29,13 +37,22 @@ function currentTabFromHash() {
 function showTab(tab) {
   renderShell(tab); // from nav.js — redraws sidebar/header with correct active state
   document.querySelectorAll(".page-panel").forEach((p) => (p.hidden = p.dataset.panel !== tab));
+  if (tab === "chat") scrollChatToBottom();
+}
+
+function scrollChatToBottom() {
+  const log = document.getElementById("chat-log");
+  if (!log) return;
+  requestAnimationFrame(() => {
+    log.scrollTop = log.scrollHeight;
+  });
 }
 
 // ---------- Chat ----------
 function newChat() {
   document.getElementById("chat-log").innerHTML = `
-    <div class="flex items-center justify-center my-2">
-      <span class="font-mono-sm text-mono-sm text-secondary bg-surface-container px-3 py-1 border border-outline/20 rounded">TODAY</span>
+    <div class="d-flex justify-content-center my-2">
+      <span class="font-mono-sm text-mono-sm text-secondary bg-surface-container px-3 py-1 border border-soft rounded">TODAY</span>
     </div>`;
   window.location.hash = "chat";
 }
@@ -51,35 +68,92 @@ function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
 
+  const sendBtn = document.getElementById("send-btn");
+  if (sendBtn.disabled) return;
+  sendBtn.disabled = true;
+
   const user = Store.getCurrentUser();
   const log = document.getElementById("chat-log");
 
   const userMsg = document.createElement("div");
-  userMsg.className = "flex justify-end w-full";
+  userMsg.className = "d-flex justify-content-end w-100";
   userMsg.innerHTML = `
-    <div class="max-w-[80%] flex items-end gap-3 flex-row-reverse">
-      <div class="w-8 h-8 rounded-full bg-slate-900 text-primary-fixed-dim flex items-center justify-center font-label-md text-label-md shrink-0">${user.name.charAt(0).toUpperCase()}</div>
-      <div class="bg-slate-900 text-white p-4 rounded-xl rounded-br-sm border border-slate-800">
-        <p class="font-body-md text-body-md">${escapeHtml(text)}</p>
+    <div class="msg-group d-flex align-items-end gap-3 flex-row-reverse">
+      <div class="avatar avatar-user">${user.name.charAt(0).toUpperCase()}</div>
+      <div class="bubble bubble-user">
+        <p class="font-body-md text-body-md mb-0">${escapeHtml(text)}</p>
       </div>
     </div>`;
   log.appendChild(userMsg);
   input.value = "";
   log.scrollTop = log.scrollHeight;
 
-  // TODO: replace this with a real fetch("/chat", { ... }) call to your
-  // FastAPI backend, which forwards the prompt to Ollama.
- fetch("http://localhost:8000/chat", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ prompt: text })
-})
-  .then(res => res.json())
-  .then(data => {
-    const aiMsg = document.createElement("div");
-    aiMsg.className = "flex justify-start w-full";
-    aiMsg.innerHTML = `<div class="max-w-[80%] p-4 rounded-xl bg-surface-container border border-outline/20"><p>${escapeHtml(data.reply)}</p></div>`;
-    log.appendChild(aiMsg);
-    log.scrollTop = log.scrollHeight;
-  });
+  const typingMsg = document.createElement("div");
+  typingMsg.className = "d-flex justify-content-start w-100";
+  typingMsg.id = "typing-indicator";
+  typingMsg.innerHTML = `
+    <div class="msg-group d-flex align-items-start gap-3">
+      <div class="avatar avatar-ai">
+        <span class="material-symbols-outlined icon-xs">smart_toy</span>
+      </div>
+      <div class="bubble bubble-ai">
+        <p class="font-body-md text-body-md text-secondary mb-0">TRA AI is thinking…</p>
+      </div>
+    </div>`;
+  log.appendChild(typingMsg);
+  log.scrollTop = log.scrollHeight;
+
+  // Safety net so the button can never stay stuck disabled: abort after
+  // 120s (matches the backend's Ollama timeout) and always release the button.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 120000);
+
+  fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt: text }),
+    signal: controller.signal
+  })
+    .then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Chat request failed.");
+      return data;
+    })
+    .then((data) => {
+      const aiMsg = document.createElement("div");
+      aiMsg.className = "d-flex justify-content-start w-100";
+      aiMsg.innerHTML = `
+        <div class="msg-group d-flex align-items-start gap-3">
+          <div class="avatar avatar-ai">
+            <span class="material-symbols-outlined icon-xs">smart_toy</span>
+          </div>
+          <div class="bubble bubble-ai">
+            <p class="font-body-md text-body-md mb-0">${escapeHtml(data.reply)}</p>
+          </div>
+        </div>`;
+      typingMsg.remove();
+      log.appendChild(aiMsg);
+      log.scrollTop = log.scrollHeight;
+    })
+    .catch((err) => {
+      typingMsg.remove();
+      const msg = err.name === "AbortError" ? "Request timed out. Please try again." : err.message;
+      const aiMsg = document.createElement("div");
+      aiMsg.className = "d-flex justify-content-start w-100";
+      aiMsg.innerHTML = `
+        <div class="msg-group d-flex align-items-start gap-3">
+          <div class="avatar avatar-ai">
+            <span class="material-symbols-outlined icon-xs">smart_toy</span>
+          </div>
+          <div class="bubble bubble-error">
+            <p class="font-body-md text-body-md mb-0">${escapeHtml(msg)}</p>
+          </div>
+        </div>`;
+      log.appendChild(aiMsg);
+      log.scrollTop = log.scrollHeight;
+    })
+    .finally(() => {
+      clearTimeout(timeoutId);
+      sendBtn.disabled = false; // always re-enable, on success, error, or timeout
+    });
 }
