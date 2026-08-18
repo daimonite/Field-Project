@@ -44,8 +44,13 @@
         </div>
         <div>
           <label class="font-label-md text-label-md text-on-surface-variant d-block mb-1" for="login-password">PASSWORD</label>
-          <input id="login-password" type="password" required autocomplete="current-password"
-            class="form-control py-25 font-body-md text-body-md" placeholder="••••••••"/>
+          <div class="position-relative">
+            <input id="login-password" type="password" required autocomplete="current-password"
+              class="form-control py-25 pe-5 font-body-md text-body-md" placeholder="••••••••"/>
+            <button type="button" id="toggle-password" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-secondary p-2 me-1 text-decoration-none" title="Show / Hide password">
+              <span class="material-symbols-outlined icon-sm" id="toggle-password-icon">visibility</span>
+            </button>
+          </div>
         </div>
         <button type="submit" class="btn btn-brand w-100 mt-2">SIGN IN</button>
       </form>
@@ -55,8 +60,6 @@
         <a href="register.html" class="font-body-sm text-body-sm text-primary fw-semibold hover-underline">Request access</a>
       </div>
     </div>
-
-    <p class="text-center font-mono-sm text-mono-sm text-secondary mt-4 mb-0">Demo logins — admin: <span class="text-soft-on-sidebar">admin / admin123</span> · staff: <span class="text-soft-on-sidebar">demo / demo123</span></p>
   </div>
 
   <script src="js/store.js"></script>

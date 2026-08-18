@@ -3,24 +3,261 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Pending approval — AI Office Node</title>
+<title>Registration Status — AI Office Node</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <script src="js/theme.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Hanken+Grotesk:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="css/styles.css"/>
 </head>
-<body class="bg-sidebar vh-100 d-flex align-items-center justify-content-center position-relative">
+<body class="bg-sidebar vh-100 d-flex align-items-center justify-content-center position-relative overflow-auto py-5">
+  <div class="auth-grid"></div>
+
   <button type="button" onclick="toggleTheme()" class="theme-toggle position-absolute top-0 end-0 m-3" title="Toggle light/dark theme">
     <span class="material-symbols-outlined" data-theme-icon>dark_mode</span>
   </button>
 
-  <div class="w-100 w-max-sm mx-4 text-center">
-    <div class="icon-box-lg bg-brand-soft border border-brand d-flex align-items-center justify-content-center mx-auto mb-4">
-      <span class="material-symbols-outlined text-brand" style="font-size: 30px;">hourglass_top</span>
+  <div class="position-relative w-100 w-max-md mx-4">
+    <div class="d-flex align-items-center gap-3 justify-content-center mb-4">
+      <div class="icon-box bg-brand">
+        <span class="material-symbols-outlined text-on-brand">hub</span>
+      </div>
+      <div>
+        <h1 class="font-headline-md text-headline-md text-brand mb-0 lh-1">AI Office Node</h1>
+        <p class="font-mono-sm text-mono-sm text-secondary mt-1 mb-0">TRA · Registration Tracker</p>
+      </div>
     </div>
-    <h2 class="font-headline-md text-headline-md text-white mb-2">Request submitted</h2>
-    <p class="font-body-sm text-body-sm text-secondary mb-4">Your account is waiting for admin approval. You'll be able to sign in once it's approved.</p>
-    <a href="login.html" class="btn btn-brand px-4 py-25">BACK TO SIGN IN</a>
+
+    <div class="bg-surface border border-soft rounded-xl p-6 shadow-sm text-center">
+      
+      <!-- Dynamic Status Icon -->
+      <div id="status-icon-box" class="icon-box-lg bg-brand-soft border border-brand d-flex align-items-center justify-content-center mx-auto mb-3">
+        <span id="status-icon" class="material-symbols-outlined text-brand" style="font-size: 32px;">hourglass_top</span>
+      </div>
+
+      <h2 id="status-title" class="font-headline-md text-headline-md text-main mb-2">Registration Status</h2>
+      <p id="status-subtitle" class="font-body-sm text-body-sm text-secondary mb-4">Checking approval status on the local node...</p>
+
+      <!-- Account Info Card -->
+      <div id="user-details-card" class="bg-surface-container border border-soft rounded-lg p-3 mb-4 text-start" hidden>
+        <div class="row g-2 font-body-sm text-body-sm">
+          <div class="col-6">
+            <span class="text-secondary font-label-md text-label-md d-block">APPLICANT</span>
+            <span id="card-name" class="fw-semibold text-main">—</span>
+          </div>
+          <div class="col-6">
+            <span class="text-secondary font-label-md text-label-md d-block">USERNAME</span>
+            <span id="card-username" class="font-mono-sm text-mono-sm text-secondary">—</span>
+          </div>
+          <div class="col-6">
+            <span class="text-secondary font-label-md text-label-md d-block">DEPARTMENT</span>
+            <span id="card-dept" class="text-main">—</span>
+          </div>
+          <div class="col-6">
+            <span class="text-secondary font-label-md text-label-md d-block">STATUS</span>
+            <span id="card-status-badge" class="badge-soft badge-pending">PENDING</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Feedback Banner -->
+      <div id="feedback-container" class="alert alert-info border d-flex align-items-start gap-3 text-start mb-4" hidden>
+        <span class="material-symbols-outlined text-primary mt-1">chat_bubble</span>
+        <div>
+          <strong class="d-block font-label-md text-label-md text-primary">ADMINISTRATOR FEEDBACK:</strong>
+          <p id="feedback-text" class="font-body-sm text-body-sm mb-0 mt-1 text-main"></p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex flex-column gap-2">
+        <button id="btn-refresh" type="button" class="btn btn-outline-brand w-100 d-flex align-items-center justify-content-center gap-2">
+          <span class="material-symbols-outlined icon-xs">refresh</span> Check Status Now
+        </button>
+        <a id="btn-signin" href="login.html" class="btn btn-brand w-100">PROCEED TO SIGN IN</a>
+      </div>
+
+      <!-- Lookup another user form -->
+      <div class="mt-4 pt-3 border-top border-soft text-start">
+        <label class="font-label-md text-label-md text-secondary mb-1" for="input-check-username">TRACK ANOTHER REGISTRATION</label>
+        <div class="input-group">
+          <input id="input-check-username" type="text" class="form-control font-body-sm text-body-sm" placeholder="Enter username (e.g. amina.z)"/>
+          <button id="btn-lookup" class="btn btn-secondary px-3 font-body-sm text-body-sm" type="button">Track</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-3">
+      <a href="login.html" class="font-body-sm text-body-sm text-primary fw-semibold hover-underline">&larr; Back to sign in</a>
+    </div>
   </div>
+
+  <script src="js/store.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      let targetUsername = urlParams.get("username") || "";
+
+      const inputLookup = document.getElementById("input-check-username");
+      const btnLookup = document.getElementById("btn-lookup");
+      const btnRefresh = document.getElementById("btn-refresh");
+
+      if (targetUsername) {
+        inputLookup.value = targetUsername;
+        checkStatus(targetUsername);
+      } else {
+        showEmptyPrompt();
+      }
+
+      btnLookup.addEventListener("click", () => {
+        const u = inputLookup.value.trim();
+        if (u) {
+          targetUsername = u;
+          window.history.replaceState({}, "", `pending.html?username=${encodeURIComponent(u)}`);
+          checkStatus(u);
+        }
+      });
+
+      inputLookup.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          btnLookup.click();
+        }
+      });
+
+      btnRefresh.addEventListener("click", () => {
+        if (targetUsername) checkStatus(targetUsername);
+      });
+
+      // Auto-poll every 8 seconds if in pending state
+      let pollInterval = setInterval(() => {
+        if (targetUsername) {
+          checkStatus(targetUsername, true);
+        }
+      }, 8000);
+
+      async function checkStatus(username, isPoll = false) {
+        if (!isPoll) {
+          btnRefresh.disabled = true;
+          btnRefresh.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Checking...`;
+        }
+
+        try {
+          const res = await Store.checkStatus(username);
+          if (!res || !res.exists) {
+            renderNotFound(username);
+            return;
+          }
+
+          renderUserStatus(res);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          if (!isPoll) {
+            btnRefresh.disabled = false;
+            btnRefresh.innerHTML = `<span class="material-symbols-outlined icon-xs">refresh</span> Check Status Now`;
+          }
+        }
+      }
+
+      function showEmptyPrompt() {
+        document.getElementById("status-title").textContent = "Track Registration";
+        document.getElementById("status-subtitle").textContent = "Enter your username below to check if your account has been approved by the administrator.";
+        document.getElementById("user-details-card").hidden = true;
+        document.getElementById("feedback-container").hidden = true;
+      }
+
+      function renderNotFound(username) {
+        document.getElementById("status-icon-box").className = "icon-box-lg bg-warning-soft border border-warning d-flex align-items-center justify-content-center mx-auto mb-3";
+        document.getElementById("status-icon").textContent = "search_off";
+        document.getElementById("status-icon").className = "material-symbols-outlined text-warning";
+        document.getElementById("status-title").textContent = "Account Not Found";
+        document.getElementById("status-subtitle").textContent = `No registration request found for username "${username}". Please verify your username or submit a new access request.`;
+        document.getElementById("user-details-card").hidden = true;
+        document.getElementById("feedback-container").hidden = true;
+      }
+
+      function renderUserStatus(data) {
+        const detailsCard = document.getElementById("user-details-card");
+        const feedbackContainer = document.getElementById("feedback-container");
+        const feedbackText = document.getElementById("feedback-text");
+        const cardBadge = document.getElementById("card-status-badge");
+        const iconBox = document.getElementById("status-icon-box");
+        const icon = document.getElementById("status-icon");
+        const title = document.getElementById("status-title");
+        const subtitle = document.getElementById("status-subtitle");
+        const btnSignIn = document.getElementById("btn-signin");
+
+        detailsCard.hidden = false;
+        document.getElementById("card-name").textContent = data.name || "—";
+        document.getElementById("card-username").textContent = data.username;
+        document.getElementById("card-dept").textContent = data.dept || "—";
+
+        if (data.status === "active") {
+          iconBox.className = "icon-box-lg bg-success-soft border border-success d-flex align-items-center justify-content-center mx-auto mb-3";
+          icon.className = "material-symbols-outlined text-success";
+          icon.textContent = "check_circle";
+          title.textContent = "Account Approved!";
+          subtitle.textContent = "Your registration request has been approved by the administrator. You can now sign in to the node.";
+          cardBadge.className = "badge-soft badge-active";
+          cardBadge.textContent = "ACTIVE / APPROVED";
+
+          btnSignIn.className = "btn btn-success text-white w-100 py-2 fw-semibold";
+          btnSignIn.textContent = "SIGN IN NOW →";
+
+          if (data.approval_feedback) {
+            feedbackContainer.hidden = false;
+            feedbackContainer.className = "alert alert-success border border-success d-flex align-items-start gap-3 text-start mb-4";
+            feedbackText.textContent = data.approval_feedback;
+          } else {
+            feedbackContainer.hidden = true;
+          }
+
+          clearInterval(pollInterval);
+        } else if (data.status === "pending") {
+          iconBox.className = "icon-box-lg bg-brand-soft border border-brand d-flex align-items-center justify-content-center mx-auto mb-3";
+          icon.className = "material-symbols-outlined text-brand";
+          icon.textContent = "hourglass_top";
+          title.textContent = "Waiting for Approval";
+          subtitle.textContent = "Your registration request is in the administrator approval queue. This page auto-refreshes every few seconds.";
+          cardBadge.className = "badge-soft badge-pending";
+          cardBadge.textContent = "PENDING REVIEW";
+
+          btnSignIn.className = "btn btn-brand w-100";
+          btnSignIn.textContent = "BACK TO SIGN IN";
+
+          if (data.approval_feedback) {
+            feedbackContainer.hidden = false;
+            feedbackContainer.className = "alert alert-info border d-flex align-items-start gap-3 text-start mb-4";
+            feedbackText.textContent = data.approval_feedback;
+          } else {
+            feedbackContainer.hidden = true;
+          }
+        } else if (data.status === "removed") {
+          iconBox.className = "icon-box-lg bg-error-container border border-error d-flex align-items-center justify-content-center mx-auto mb-3";
+          icon.className = "material-symbols-outlined text-error";
+          icon.textContent = "cancel";
+          title.textContent = "Request Not Approved";
+          subtitle.textContent = "Your access request was reviewed and closed by the administrator.";
+          cardBadge.className = "badge-soft badge-removed";
+          cardBadge.textContent = "REJECTED / DEACTIVATED";
+
+          btnSignIn.className = "btn btn-outline-secondary w-100";
+          btnSignIn.textContent = "RETURN TO SIGN IN";
+
+          if (data.approval_feedback) {
+            feedbackContainer.hidden = false;
+            feedbackContainer.className = "alert alert-danger border border-danger d-flex align-items-start gap-3 text-start mb-4";
+            feedbackText.textContent = data.approval_feedback;
+          } else {
+            feedbackContainer.hidden = true;
+          }
+
+          clearInterval(pollInterval);
+        }
+      }
+    });
+  </script>
 </body>
 </html>
+

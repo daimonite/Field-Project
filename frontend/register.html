@@ -29,7 +29,10 @@
 
     <div class="bg-surface border border-soft rounded-xl p-7 shadow-sm">
       <h2 class="font-headline-md text-headline-md text-main mb-1">Request access</h2>
-      <p class="font-body-sm text-body-sm text-secondary mb-4">An admin must approve your account before you can sign in.</p>
+      <div id="reg-error" hidden class="mb-3 bg-error-container border border-error text-on-error-container font-body-sm text-body-sm rounded px-3 py-2 d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined icon-xs">error</span>
+        <span id="reg-error-text">Registration error.</span>
+      </div>
 
       <form id="register-form" class="d-flex flex-column gap-3">
         <div>
@@ -46,7 +49,12 @@
         </div>
         <div>
           <label class="font-label-md text-label-md text-on-surface-variant d-block mb-1" for="reg-password">PASSWORD</label>
-          <input id="reg-password" type="password" required class="form-control py-25 font-body-md text-body-md" placeholder="Create a password"/>
+          <div class="position-relative">
+            <input id="reg-password" type="password" required class="form-control py-25 pe-5 font-body-md text-body-md" placeholder="Create a password"/>
+            <button type="button" id="toggle-reg-password" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-secondary p-2 me-1 text-decoration-none" title="Show / Hide password">
+              <span class="material-symbols-outlined icon-sm" id="toggle-reg-password-icon">visibility</span>
+            </button>
+          </div>
         </div>
         <button type="submit" class="btn btn-brand w-100 mt-2">SUBMIT REQUEST</button>
       </form>

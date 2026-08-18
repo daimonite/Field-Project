@@ -17,12 +17,27 @@
   <div class="content-area d-flex flex-column vh-100 position-relative">
     <main class="page-panel flex-grow-1 overflow-auto p-4 min-h-0">
       <div class="max-w-5xl mx-auto">
-        <h2 class="font-headline-md text-headline-md text-main mb-1">Admin</h2>
-        <p class="font-body-sm text-body-sm text-secondary mb-4">User approvals, access, and node settings.</p>
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h2 class="font-headline-md text-headline-md text-main mb-1">Admin Panel</h2>
+            <p class="font-body-sm text-body-sm text-secondary mb-0">User approvals, custom feedback messages, access control, and node settings.</p>
+          </div>
+          <button type="button" onclick="renderUsersTable()" class="btn btn-outline-brand btn-sm d-flex align-items-center gap-1">
+            <span class="material-symbols-outlined icon-xs">refresh</span> Refresh Users
+          </button>
+        </div>
 
-        <div class="bg-surface border border-soft rounded-lg mb-4 overflow-hidden">
+        <div id="admin-alert" hidden class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+          <span id="admin-alert-text">Action completed successfully.</span>
+          <button type="button" class="btn-close" onclick="this.parentElement.hidden=true"></button>
+        </div>
+
+        <div class="bg-surface border border-soft rounded-lg mb-4 overflow-hidden shadow-sm">
           <div class="px-4 py-3 border-bottom border-soft d-flex align-items-center justify-content-between">
-            <p class="font-body-md text-body-md fw-semibold text-main mb-0">Users</p>
+            <div class="d-flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-primary">group</span>
+              <p class="font-body-md text-body-md fw-semibold text-main mb-0">User Directory &amp; Access Requests</p>
+            </div>
             <span id="pending-count" class="badge-soft badge-pending">0 pending</span>
           </div>
           <div class="table-responsive">
@@ -34,46 +49,80 @@
                   <th class="text-start">DEPARTMENT</th>
                   <th class="text-start">ROLE</th>
                   <th class="text-start">STATUS</th>
+                  <th class="text-start">ADMIN FEEDBACK / NOTES</th>
                   <th class="text-end">ACTIONS</th>
                 </tr>
               </thead>
-              <tbody id="users-table-body"></tbody>
+              <tbody id="users-table-body">
+                <tr><td colspan="7" class="text-center py-4 text-secondary">Loading users...</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
 
-        <div class="bg-surface border border-soft rounded-lg">
-          <div class="px-4 py-3 border-bottom border-soft">
+        <div class="bg-surface border border-soft rounded-lg shadow-sm">
+          <div class="px-4 py-3 border-bottom border-soft d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary">tune</span>
             <p class="font-body-md text-body-md fw-semibold text-main mb-0">Network &amp; model settings</p>
           </div>
           <div class="p-4">
             <div class="row g-3">
               <div class="col-12 col-md-6">
                 <label class="font-label-md text-label-md text-on-surface-variant d-block mb-1" for="node-address">NODE ADDRESS</label>
-                <input id="node-address" value="http://192.168.1.10:8000" class="form-control font-mono-sm text-mono-sm"/>
+                <input id="node-address" value="http://localhost:8000" class="form-control font-mono-sm text-mono-sm"/>
               </div>
               <div class="col-12 col-md-6">
                 <label class="font-label-md text-label-md text-on-surface-variant d-block mb-1" for="active-model">ACTIVE MODEL</label>
-                <input id="active-model" value="qwen3.5:0.8b" class="form-control font-mono-sm text-mono-sm"/>
+                <input id="active-model" value="qwen3:1.7b" class="form-control font-mono-sm text-mono-sm"/>
               </div>
               <div class="col-12 col-md-6">
                 <label class="font-label-md text-label-md text-on-surface-variant d-block mb-1" for="max-users">MAX CONCURRENT USERS</label>
-                <input id="max-users" value="5" class="form-control font-mono-sm text-mono-sm"/>
+                <input id="max-users" type="number" value="60" class="form-control font-mono-sm text-mono-sm"/>
               </div>
               <div class="col-12 col-md-6">
-                <label class="font-label-md text-label-md text-on-surface-variant d-block mb-1" for="default-printer">DEFAULT PRINTER</label>
-                <input id="default-printer" value="Office-HP-LaserJet" class="form-control font-mono-sm text-mono-sm"/>
+                <label class="font-label-md text-label-md text-on-surface-variant d-block mb-1" for="default-printer">DEFAULT PRINTER ID</label>
+                <input id="default-printer" type="number" value="1" class="form-control font-mono-sm text-mono-sm"/>
               </div>
             </div>
-            <button type="button" class="btn btn-brand mt-4">SAVE SETTINGS</button>
+            <button id="btn-save-settings" type="button" class="btn btn-brand mt-4">SAVE SETTINGS</button>
           </div>
         </div>
       </div>
     </main>
   </div>
 
+  <!-- Approval / Reject Modal with Feedback Textarea -->
+  <div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-surface border border-soft shadow-lg">
+        <div class="modal-header border-bottom border-soft">
+          <h5 class="modal-title font-headline-md text-headline-md text-main" id="approvalModalLabel">Approve Registration</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="bg-surface-container p-3 rounded-lg mb-3">
+            <p class="mb-1 font-body-sm text-body-sm text-main"><strong>Applicant:</strong> <span id="modal-user-name"></span></p>
+            <p class="mb-1 font-body-sm text-body-sm text-secondary"><strong>Username:</strong> <span id="modal-user-username"></span></p>
+            <p class="mb-0 font-body-sm text-body-sm text-secondary"><strong>Department:</strong> <span id="modal-user-dept"></span></p>
+          </div>
+          <div class="mb-3">
+            <label for="modal-feedback-input" class="form-label font-label-md text-label-md text-main">Admin Feedback / Welcome Message to Applicant:</label>
+            <textarea id="modal-feedback-input" class="form-control font-body-sm text-body-sm" rows="3" placeholder="e.g. Approved. Welcome to the Domestic Revenue team! You can now log in."></textarea>
+            <small class="text-secondary font-label-md text-label-md mt-1 d-block">The user will see this feedback message on their registration status page and dashboard.</small>
+          </div>
+        </div>
+        <div class="modal-footer border-top border-soft">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="modal-confirm-btn" class="btn btn-brand btn-sm">Confirm &amp; Send Feedback</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/store.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>
+
