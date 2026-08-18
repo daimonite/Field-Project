@@ -4,16 +4,8 @@ import re
 import httpx
 from fastapi import Body, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-<<<<<<< HEAD
-from fastapi import Depends, HTTPException, Header
-import httpx
-from fastapi import Body
-from backend.models import SessionLocal, User
-from backend.auth import hash_password, verify_password, create_token, decode_token
-=======
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
->>>>>>> a780bd51137828fefc4029bf6d0a03eb762f8846
 
 app = FastAPI()
 
@@ -34,10 +26,6 @@ MODEL_NAME = "qwen3.5:0.8b"
 def ping():
     return {"status": "ok"}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> a780bd51137828fefc4029bf6d0a03eb762f8846
 
 @app.get("/model")
 def get_model():
