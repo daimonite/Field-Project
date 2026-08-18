@@ -12,27 +12,26 @@ document.addEventListener("DOMContentLoaded", () => {
   renderUsersTable();
 });
 
+const statusBadge = {
+  active: "badge-soft badge-active",
+  pending: "badge-soft badge-pending",
+  removed: "badge-soft badge-removed",
+};
+
 function renderUsersTable() {
   const body = document.getElementById("users-table-body");
   const users = Store.getUsers();
   body.innerHTML = "";
 
-  const statusStyles = {
-    active: "bg-success-container text-success-teal",
-    pending: "bg-primary-container/30 text-on-primary-container",
-    removed: "bg-error-container text-error-crimson",
-  };
-
   users.forEach((u) => {
     const row = document.createElement("tr");
-    row.className = "border-b border-outline-variant last:border-0";
     row.innerHTML = `
-      <td class="px-5 py-3 font-body-sm text-body-sm text-slate-900">${escapeHtml(u.name)}</td>
-      <td class="px-5 py-3 font-mono-sm text-mono-sm text-secondary">${escapeHtml(u.username)}</td>
-      <td class="px-5 py-3 font-body-sm text-body-sm text-secondary">${escapeHtml(u.dept)}</td>
-      <td class="px-5 py-3 font-label-md text-label-md text-secondary">${u.role.toUpperCase()}</td>
-      <td class="px-5 py-3"><span class="font-label-md text-label-md px-2.5 py-1 rounded-full ${statusStyles[u.status]}">${u.status.toUpperCase()}</span></td>
-      <td class="px-5 py-3 text-right whitespace-nowrap">${actionsHtml(u)}</td>`;
+      <td class="font-body-sm text-body-sm text-main">${escapeHtml(u.name)}</td>
+      <td class="font-mono-sm text-mono-sm text-secondary">${escapeHtml(u.username)}</td>
+      <td class="font-body-sm text-body-sm text-secondary">${escapeHtml(u.dept)}</td>
+      <td class="font-label-md text-label-md text-secondary">${u.role.toUpperCase()}</td>
+      <td><span class="${statusBadge[u.status]}">${u.status.toUpperCase()}</span></td>
+      <td class="text-end text-nowrap">${actionsHtml(u)}</td>`;
     body.appendChild(row);
   });
 
@@ -42,16 +41,16 @@ function renderUsersTable() {
 function actionsHtml(u) {
   if (u.status === "pending") {
     return `
-      <button onclick="handleApprove(${u.id})" class="text-success-teal hover:underline font-label-md text-label-md mr-3">Approve</button>
-      <button onclick="handleReject(${u.id})" class="text-error hover:underline font-label-md text-label-md">Reject</button>`;
+      <button type="button" onclick="handleApprove(${u.id})" class="btn btn-sm text-success fw-semibold me-2 hover-underline">Approve</button>
+      <button type="button" onclick="handleReject(${u.id})" class="btn btn-sm text-error fw-semibold hover-underline">Reject</button>`;
   }
   if (u.status === "active" && u.username !== "admin") {
-    return `<button onclick="handleRemove(${u.id})" class="text-error hover:underline font-label-md text-label-md">Remove</button>`;
+    return `<button type="button" onclick="handleRemove(${u.id})" class="btn btn-sm text-error fw-semibold hover-underline">Remove</button>`;
   }
   if (u.status === "removed") {
-    return `<button onclick="handleReinstate(${u.id})" class="text-secondary hover:underline font-label-md text-label-md">Reinstate</button>`;
+    return `<button type="button" onclick="handleReinstate(${u.id})" class="btn btn-sm text-secondary fw-semibold hover-underline">Reinstate</button>`;
   }
-  return `<span class="text-secondary/40 font-label-md text-label-md">—</span>`;
+  return `<span class="text-tertiary font-label-md text-label-md">—</span>`;
 }
 
 function handleApprove(id) { Store.approveUser(id); renderUsersTable(); }
