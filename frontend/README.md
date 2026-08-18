@@ -2,25 +2,35 @@
 
 Split into separate pages and JS files so each part can be debugged on its own.
 
-## File structure
+## Getting started
 
+Download and install python
 ```
-node-ai-frontend/
-├── login.html         Sign-in page
-├── register.html       "Request access" form → creates a pending account
-├── pending.html         Static "waiting for approval" screen
-├── user.html            Dashboard / AI Chat / File Search / Automation (tabs via #hash)
-├── admin.html            Admin-only: approve/reject/remove users, node settings
-├── css/
-│   └── styles.css        Small shared CSS (Material Symbols fix, base font)
-└── js/
-    ├── tailwind-config.js   Design tokens (colors/fonts/spacing) — edit here for brand changes
-    ├── store.js              Shared "database" + auth (DEMO ONLY — see warning below)
-    ├── nav.js                 Renders the sidebar + header, used by user.html & admin.html
-    ├── login.js               login.html logic only
-    ├── register.js             register.html logic only
-    ├── app.js                   user.html logic (chat, dashboard, file search, automation)
-    └── admin.js                 admin.html logic (user table, approve/reject/remove)
+sudo dnf install python3 python3-pip python3-devel -y
+```
+Download ollama and pick your model
+```
+curl -fsSL https://ollama.com/install.sh | sh && ollama run qwen3.5:0.8b
+```
+Set python environment
+```
+# 1. Create a virtual environment (named 'venv')
+python3 -m venv venv
+
+# 2. Activate the virtual environment
+source venv/bin/activate
+```
+
+Download required packages
+```
+pip install --upgrade pip
+
+pip install fastapi uvicorn python-multipart ollama pandas openpyxl
+```
+
+Start the server
+```
+uvicorn main:app --reload
 ```
 
 ## How each page is protected

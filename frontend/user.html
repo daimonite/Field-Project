@@ -1,158 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>AI Office Node</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script src="js/tailwind-config.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<script src="js/theme.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Hanken+Grotesk:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="css/styles.css"/>
 </head>
-<body class="bg-background text-on-surface h-screen overflow-hidden font-body-md text-body-md">
+<body class="bg-app text-main vh-100 overflow-hidden font-body-md text-body-md">
 
   <div id="sidebar-root"></div>
   <div id="header-root"></div>
 
-  <div class="ml-64 flex flex-col h-screen relative">
+  <div class="content-area d-flex flex-column vh-100 position-relative">
 
     <!-- Dashboard -->
-    <main data-panel="dashboard" class="page-panel flex-1 mt-16 overflow-y-auto p-gutter" hidden>
+    <main data-panel="dashboard" class="page-panel flex-grow-1 overflow-auto p-4 min-h-0" hidden>
       <div class="max-w-5xl mx-auto">
-        <h2 class="font-headline-md text-headline-md text-slate-900 mb-1">Welcome back</h2>
-        <p class="font-body-sm text-body-sm text-secondary mb-6">Node status and quick access.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div class="bg-white border border-outline-variant rounded-lg p-5">
-            <p class="font-label-md text-label-md text-secondary mb-2">NODE STATUS</p>
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-success-teal"></span>
-              <span class="font-headline-md text-headline-md text-slate-900">Online</span>
+        <h2 class="font-headline-md text-headline-md text-main mb-1">Welcome back</h2>
+        <p class="font-body-sm text-body-sm text-secondary mb-4">Node status and quick access.</p>
+        <div class="row g-4 mb-4">
+          <div class="col-12 col-md-4">
+            <div class="bg-surface border border-soft rounded-lg p-4 h-100">
+              <p class="font-label-md text-label-md text-secondary mb-2">NODE STATUS</p>
+              <div class="d-flex align-items-center gap-2">
+                <span class="d-inline-block rounded-circle bg-success" style="width: 10px; height: 10px;"></span>
+                <span class="font-headline-md text-headline-md text-main">Online</span>
+              </div>
             </div>
           </div>
-          <div class="bg-white border border-outline-variant rounded-lg p-5">
-            <p class="font-label-md text-label-md text-secondary mb-2">ACTIVE USERS</p>
-            <span class="font-headline-md text-headline-md text-slate-900">4 / 5</span>
+          <div class="col-12 col-md-4">
+            <div class="bg-surface border border-soft rounded-lg p-4 h-100">
+              <p class="font-label-md text-label-md text-secondary mb-2">ACTIVE USERS</p>
+              <span class="font-headline-md text-headline-md text-main">4 / 5</span>
+            </div>
           </div>
-          <div class="bg-white border border-outline-variant rounded-lg p-5">
-            <p class="font-label-md text-label-md text-secondary mb-2">MODEL</p>
-            <span class="font-mono-sm text-mono-sm text-slate-900">qwen3:8b</span>
+          <div class="col-12 col-md-4">
+            <div class="bg-surface border border-soft rounded-lg p-4 h-100">
+              <p class="font-label-md text-label-md text-secondary mb-2">MODEL</p>
+              <span id="node-model" class="font-mono-sm text-mono-sm text-main">…</span>
+            </div>
           </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="#chat" class="text-left bg-white border border-outline-variant hover:border-primary-fixed-dim rounded-lg p-5 transition-colors block">
-            <span class="material-symbols-outlined text-primary mb-2 block">chat</span>
-            <p class="font-body-md text-body-md font-semibold text-slate-900">Start a chat</p>
-            <p class="font-body-sm text-body-sm text-secondary">Ask questions, summarize files, draft documents.</p>
-          </a>
-          <a href="#filesearch" class="text-left bg-white border border-outline-variant hover:border-primary-fixed-dim rounded-lg p-5 transition-colors block">
-            <span class="material-symbols-outlined text-primary mb-2 block">search</span>
-            <p class="font-body-md text-body-md font-semibold text-slate-900">Search shared files</p>
-            <p class="font-body-sm text-body-sm text-secondary">Find documents across the office network drive.</p>
-          </a>
+        <div class="row g-4">
+          <div class="col-12 col-md-6">
+            <a href="#chat" class="card-link bg-surface border border-soft rounded-lg p-4 d-block text-decoration-none">
+              <span class="material-symbols-outlined text-primary d-block mb-2">chat</span>
+              <p class="font-body-md text-body-md fw-semibold text-main mb-1">Start a chat</p>
+              <p class="font-body-sm text-body-sm text-secondary mb-0">Ask questions, summarize files, draft documents.</p>
+            </a>
+          </div>
+          <div class="col-12 col-md-6">
+            <a href="#filesearch" class="card-link bg-surface border border-soft rounded-lg p-4 d-block text-decoration-none">
+              <span class="material-symbols-outlined text-primary d-block mb-2">search</span>
+              <p class="font-body-md text-body-md fw-semibold text-main mb-1">Search shared files</p>
+              <p class="font-body-sm text-body-sm text-secondary mb-0">Find documents across the office network drive.</p>
+            </a>
+          </div>
         </div>
       </div>
     </main>
 
     <!-- AI Chat -->
-    <main data-panel="chat" class="page-panel flex-1 mt-16 flex flex-col bg-surface-bright relative" hidden>
-      <div id="chat-log" class="flex-1 overflow-y-auto p-gutter flex flex-col gap-6 max-w-4xl mx-auto w-full pb-40">
-        <div class="flex items-center justify-center my-2">
-          <span class="font-mono-sm text-mono-sm text-secondary bg-surface-container px-3 py-1 border border-outline/20 rounded">TODAY</span>
+    <main data-panel="chat" class="page-panel flex-grow-1 d-flex flex-column bg-app position-relative min-h-0" hidden>
+      <div id="chat-log" class="chat-log flex-grow-1 overflow-auto p-4 d-flex flex-column gap-4 w-100 mx-auto min-h-0">
+        <div class="d-flex justify-content-center my-2">
+          <span class="font-mono-sm text-mono-sm text-secondary bg-surface-container px-3 py-1 border border-soft rounded">TODAY</span>
         </div>
-        <div class="flex justify-start w-full">
-          <div class="max-w-[85%] flex items-start gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center border border-primary-fixed-dim shrink-0">
-              <span class="material-symbols-outlined text-on-primary-container text-sm">smart_toy</span>
+        <div class="d-flex w-100">
+          <div class="msg-group d-flex align-items-start gap-3">
+            <div class="avatar avatar-ai">
+              <span class="material-symbols-outlined icon-xs">smart_toy</span>
             </div>
-            <div class="bg-white text-on-surface p-4 border border-outline-variant border-l-4 border-l-primary-container rounded-r-xl rounded-bl-xl shadow-sm">
-              <p class="font-body-md text-body-md">Hi, I'm the office Node AI. I can summarize documents, search shared files, draft reports, and send jobs to the printer. What do you need?</p>
+            <div class="bubble bubble-ai">
+              <p class="font-body-md text-body-md mb-0">Hi, I'm the office TRA AI. I can summarize documents, search shared files, draft reports, and send jobs to the printer. What do you need?</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="absolute bottom-0 w-full bg-gradient-to-t from-surface-bright via-surface-bright to-transparent pt-10 pb-6 px-gutter">
-        <div class="max-w-4xl mx-auto flex flex-col gap-3">
-          <div class="flex flex-wrap gap-2">
-            <button onclick="quickAction('Summarize PDF')" class="bg-surface-container-highest border border-outline-variant hover:border-primary-fixed-dim text-on-surface-variant hover:text-slate-900 font-label-md text-label-md px-3 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">summarize</span>Summarize PDF
+      <div class="input-fade position-absolute bottom-0 start-0 w-100 pt-5 pb-4 px-4">
+        <div class="max-w-4xl mx-auto d-flex flex-column gap-3">
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" onclick="quickAction('Summarize PDF')" class="btn btn-chip">
+              <span class="material-symbols-outlined icon-xs">summarize</span>Summarize PDF
             </button>
-            <button onclick="quickAction('Query Database')" class="bg-surface-container-highest border border-outline-variant hover:border-primary-fixed-dim text-on-surface-variant hover:text-slate-900 font-label-md text-label-md px-3 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">database</span>Query Database
+            <button type="button" onclick="quickAction('Query Database')" class="btn btn-chip">
+              <span class="material-symbols-outlined icon-xs">database</span>Query Database
             </button>
-            <button onclick="quickAction('Write to Word')" class="bg-surface-container-highest border border-outline-variant hover:border-primary-fixed-dim text-on-surface-variant hover:text-slate-900 font-label-md text-label-md px-3 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">description</span>Write to Word
+            <button type="button" onclick="quickAction('Write to Word')" class="btn btn-chip">
+              <span class="material-symbols-outlined icon-xs">description</span>Write to Word
             </button>
-            <button onclick="quickAction('Print Doc')" class="bg-surface-container-highest border border-outline-variant hover:border-primary-fixed-dim text-on-surface-variant hover:text-slate-900 font-label-md text-label-md px-3 py-1.5 rounded-full transition-all duration-200 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">print</span>Print Doc
+            <button type="button" onclick="quickAction('Print Doc')" class="btn btn-chip">
+              <span class="material-symbols-outlined icon-xs">print</span>Print Doc
             </button>
           </div>
-          <div class="relative flex items-end bg-white border border-outline focus-within:border-slate-900 focus-within:ring-1 focus-within:ring-slate-900 rounded-lg shadow-sm transition-all p-2">
-            <button class="p-2 text-secondary hover:text-slate-900 transition-colors shrink-0 mb-1" title="Attach File">
+          <div class="chat-input-wrap d-flex align-items-end p-2">
+            <button type="button" class="btn p-2 text-secondary flex-shrink-0" title="Attach File">
               <span class="material-symbols-outlined">attach_file</span>
             </button>
-            <textarea id="chat-input" class="flex-1 w-full bg-transparent border-none focus:ring-0 resize-none font-body-md text-body-md placeholder:text-secondary py-3 px-2 max-h-32 overflow-y-auto" placeholder="Message Node AI..." rows="1"></textarea>
-            <div class="flex items-center gap-2 mb-1 shrink-0 px-2">
-              <button class="p-2 text-secondary hover:text-slate-900 transition-colors" title="Voice Input">
+            <textarea id="chat-input" class="form-control input-plain flex-grow-1 resize-none font-body-md text-body-md py-3 px-2 max-h-32" placeholder="Message TRA AI..." rows="1"></textarea>
+            <div class="d-flex align-items-center gap-2 mb-1 flex-shrink-0 px-2">
+              <button type="button" class="btn p-2 text-secondary" title="Voice Input">
                 <span class="material-symbols-outlined">mic</span>
               </button>
-              <button onclick="sendMessage()" class="bg-primary-container text-on-primary-container hover:bg-primary-fixed hover:text-on-primary-fixed p-2 rounded transition-colors flex items-center justify-center">
+              <button id="send-btn" type="button" onclick="sendMessage()" class="btn btn-brand p-2 d-flex align-items-center justify-content-center" title="Send">
                 <span class="material-symbols-outlined">send</span>
               </button>
             </div>
           </div>
           <div class="text-center mt-1">
-            <span class="font-label-md text-label-md text-secondary/70">Node AI can make mistakes. Consider verifying important administrative data.</span>
+            <span class="font-label-md text-label-md text-secondary">TRA AI can make mistakes. Consider verifying important administrative data.</span>
           </div>
         </div>
       </div>
     </main>
 
     <!-- File Search -->
-    <main data-panel="filesearch" class="page-panel flex-1 mt-16 overflow-y-auto p-gutter" hidden>
+    <main data-panel="filesearch" class="page-panel flex-grow-1 overflow-auto p-4 min-h-0" hidden>
       <div class="max-w-4xl mx-auto">
-        <h2 class="font-headline-md text-headline-md text-slate-900 mb-1">File Search</h2>
-        <p class="font-body-sm text-body-sm text-secondary mb-6">Search across shared office folders indexed by the node.</p>
-        <div class="relative mb-6">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
-          <input class="w-full bg-white border border-outline rounded py-3 pl-10 pr-4 font-body-md text-body-md focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none" placeholder="Search for a file, e.g. 'Q3 compliance report'"/>
+        <h2 class="font-headline-md text-headline-md text-main mb-1">File Search</h2>
+        <p class="font-body-sm text-body-sm text-secondary mb-4">Search across shared office folders indexed by the node.</p>
+        <div class="position-relative mb-4">
+          <span class="material-symbols-outlined position-absolute start-0 top-50 translate-middle-y ms-3 text-secondary">search</span>
+          <input class="form-control ps-5 font-body-md text-body-md" placeholder="Search for a file, e.g. 'Q3 compliance report'"/>
         </div>
-        <div class="flex flex-col gap-2">
-          <div class="bg-white border border-outline-variant rounded-lg p-4 flex items-center gap-3 hover:border-primary-fixed-dim transition-colors">
+        <div class="d-flex flex-column gap-2">
+          <div class="bg-surface border border-soft rounded-lg p-3 d-flex align-items-center gap-3 card-link">
             <span class="material-symbols-outlined text-secondary">description</span>
-            <div class="flex-1 min-w-0">
-              <p class="font-label-md text-label-md text-slate-900 truncate">Q3_Compliance_EU_Final.pdf</p>
-              <p class="font-mono-sm text-[11px] text-secondary">Shared / Compliance · 1.2 MB</p>
+            <div class="flex-grow-1 min-w-0">
+              <p class="font-label-md text-label-md text-main mb-0 text-truncate">Q3_Compliance_EU_Final.pdf</p>
+              <p class="font-mono-sm text-11 text-secondary mb-0">Shared / Compliance · 1.2 MB</p>
             </div>
-            <button class="text-primary hover:text-primary-container p-1"><span class="material-symbols-outlined">download</span></button>
+            <button type="button" class="btn text-primary p-1"><span class="material-symbols-outlined">download</span></button>
           </div>
-          <div class="bg-white border border-outline-variant rounded-lg p-4 flex items-center gap-3 hover:border-primary-fixed-dim transition-colors">
+          <div class="bg-surface border border-soft rounded-lg p-3 d-flex align-items-center gap-3 card-link">
             <span class="material-symbols-outlined text-secondary">table_view</span>
-            <div class="flex-1 min-w-0">
-              <p class="font-label-md text-label-md text-slate-900 truncate">Revenue_Collection_Aug2026.xlsx</p>
-              <p class="font-mono-sm text-[11px] text-secondary">Shared / Finance · 480 KB</p>
+            <div class="flex-grow-1 min-w-0">
+              <p class="font-label-md text-label-md text-main mb-0 text-truncate">Revenue_Collection_Aug2026.xlsx</p>
+              <p class="font-mono-sm text-11 text-secondary mb-0">Shared / Finance · 480 KB</p>
             </div>
-            <button class="text-primary hover:text-primary-container p-1"><span class="material-symbols-outlined">download</span></button>
+            <button type="button" class="btn text-primary p-1"><span class="material-symbols-outlined">download</span></button>
           </div>
         </div>
       </div>
     </main>
 
     <!-- Automation -->
-    <main data-panel="automation" class="page-panel flex-1 mt-16 overflow-y-auto p-gutter" hidden>
+    <main data-panel="automation" class="page-panel flex-grow-1 overflow-auto p-4 min-h-0" hidden>
       <div class="max-w-4xl mx-auto">
-        <h2 class="font-headline-md text-headline-md text-slate-900 mb-1">Automation</h2>
-        <p class="font-body-sm text-body-sm text-secondary mb-6">One-tap tasks the node can run for you.</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-white border border-outline-variant rounded-lg p-5">
-            <span class="material-symbols-outlined text-primary mb-2 block">print</span>
-            <p class="font-body-md text-body-md font-semibold text-slate-900">Print a file</p>
-            <p class="font-body-sm text-body-sm text-secondary">Send a shared document straight to the office printer.</p>
+        <h2 class="font-headline-md text-headline-md text-main mb-1">Automation</h2>
+        <p class="font-body-sm text-body-sm text-secondary mb-4">One-tap tasks the node can run for you.</p>
+        <div class="row g-4">
+          <div class="col-12 col-md-6">
+            <div class="bg-surface border border-soft rounded-lg p-4 h-100">
+              <span class="material-symbols-outlined text-primary d-block mb-2">print</span>
+              <p class="font-body-md text-body-md fw-semibold text-main mb-1">Print a file</p>
+              <p class="font-body-sm text-body-sm text-secondary mb-0">Send a shared document straight to the office printer.</p>
+            </div>
           </div>
-          <div class="bg-white border border-outline-variant rounded-lg p-5">
-            <span class="material-symbols-outlined text-primary mb-2 block">sync_alt</span>
-            <p class="font-body-md text-body-md font-semibold text-slate-900">Convert a file</p>
-            <p class="font-body-sm text-body-sm text-secondary">DOCX ↔ PDF, XLSX ↔ CSV, and more.</p>
+          <div class="col-12 col-md-6">
+            <div class="bg-surface border border-soft rounded-lg p-4 h-100">
+              <span class="material-symbols-outlined text-primary d-block mb-2">sync_alt</span>
+              <p class="font-body-md text-body-md fw-semibold text-main mb-1">Convert a file</p>
+              <p class="font-body-sm text-body-sm text-secondary mb-0">DOCX ↔ PDF, XLSX ↔ CSV, and more.</p>
+            </div>
           </div>
         </div>
       </div>
